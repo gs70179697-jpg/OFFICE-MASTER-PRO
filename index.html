@@ -2,21 +2,108 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebWord Supreme Edition</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to external stylesheet -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: black;
+        }
+        .toolbar {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .editor {
+            height: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            overflow-y: auto;
+        }
+        .dark-mode {
+            background-color: #333;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <div id="toolbar">
-        <button onclick="format('bold')">Bold</button>
-        <button onclick="format('italic')">Italic</button>
-        <button onclick="format('underline')">Underline</button>
+    <div class="toolbar">
+        <button onclick="formatText('bold')">Bold</button>
+        <button onclick="formatText('italic')">Italic</button>
+        <button onclick="insertImage()">Insert Image</button>
         <button onclick="insertTable()">Insert Table</button>
-        <input type="file" id="imageUpload" onchange="uploadImage()" />
+        <select id="fontSelector" onchange="changeFont()">
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+        </select>
         <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
     </div>
-    <div id="ruler"></div>
-    <div contenteditable="true" id="editor"></div>
-    <script src="script.js"></script> <!-- Link to external JavaScript file -->
+    <div class="editor" contenteditable="true">
+        Type your content here...
+    </div>
+    <div class="status-bar">
+        <span>Word Count: <span id="wordCount">0</span></span>
+    </div>
+    <script>
+        function formatText(command) {
+            document.execCommand(command);
+        }
+
+        function insertImage() {
+            let url = prompt('Enter image URL:');
+            if (url) {
+                const img = `<img src="${url}" alt="Image" style="max-width: 100%; height: auto;">`;
+                document.querySelector('.editor').innerHTML += img;
+            }
+        }
+
+        function insertTable() {
+            const rows = prompt('Enter number of rows:');
+            const cols = prompt('Enter number of columns:');
+            if (rows && cols) {
+                let table = '<table border="1">';
+                for (let i = 0; i < rows; i++) {
+                    table += '<tr>';
+                    for (let j = 0; j < cols; j++) {
+                        table += '<td>Cell</td>';
+                    }
+                    table += '</tr>';
+                }
+                table += '</table>';
+                document.querySelector('.editor').innerHTML += table;
+            }
+        }
+
+        function changeFont() {
+            const font = document.getElementById('fontSelector').value;
+            document.querySelector('.editor').style.fontFamily = font;
+        }
+
+        let isDarkMode = false;
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            isDarkMode = !isDarkMode;
+        }
+
+        function updateWordCount() {
+            const text = document.querySelector('.editor').innerText;
+            const words = text.split(/\\s+/).filter(word => word.length > 0);
+            document.getElementById('wordCount').innerText = words.length;
+        }
+
+        document.querySelector('.editor').addEventListener('input', updateWordCount);
+
+        window.onload = function() {
+            setInterval(() => {
+                localStorage.setItem('autosave', document.querySelector('.editor').innerHTML);
+            }, 5000);
+            const savedContent = localStorage.getItem('autosave');
+            if (savedContent) {
+                document.querySelector('.editor').innerHTML = savedContent;
+            }
+        };
+    </script>
 </body>
 </html>
