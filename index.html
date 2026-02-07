@@ -1,31 +1,22 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html lang="en">
 <head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebWord Supreme Edition</title>
-    <link rel='stylesheet' href='styles.css'>
-    <script src='script.js' defer></script>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external stylesheet -->
 </head>
 <body>
-    <div id='toolbar'>
-        <button id='bold'>Bold</button>
-        <button id='italic'>Italic</button>
-        <button id='underline'>Underline</button>
-        <button id='dark-mode'>Toggle Dark Mode</button>
+    <div id="toolbar">
+        <button onclick="format('bold')">Bold</button>
+        <button onclick="format('italic')">Italic</button>
+        <button onclick="format('underline')">Underline</button>
+        <button onclick="insertTable()">Insert Table</button>
+        <input type="file" id="imageUpload" onchange="uploadImage()" />
+        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
     </div>
-    <textarea id='editor' placeholder='Start typing...'></textarea>
-    <div id='word-count'>Word Count: 0</div>
-    <table>
-        <tr>
-            <th>Column 1</th>
-            <th>Column 2</th>
-        </tr>
-        <tr>
-            <td>Data 1</td>
-            <td>Data 2</td>
-        </tr>
-    </table>
-    <img src='example.jpg' alt='Example Image'>
+    <div id="ruler"></div>
+    <div contenteditable="true" id="editor"></div>
+    <script src="script.js"></script> <!-- Link to external JavaScript file -->
 </body>
 </html>
