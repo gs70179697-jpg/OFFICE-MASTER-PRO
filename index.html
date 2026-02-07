@@ -4,9 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebWord Supreme Edition</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #282c34;
+            color: white;
+            padding: 20px;
+        }
+        #editor {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            background-color: #222;
+            color: white;
+        }
+        .toolbar {
+            margin-bottom: 10px;
+        }
+        button {
+            margin-right: 5px;
+        }
+        #dark-mode-toggle {
+            cursor: pointer;
+            margin-left: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to WebWord Supreme Edition</h1>
-    <p>This is a web document editor that allows you to create beautiful documents online.</p>
+    <h1>WebWord Supreme Edition</h1>
+    <div class="toolbar">
+        <button onclick="format('bold')">Bold</button>
+        <button onclick="format('italic')">Italic</button>
+        <button onclick="format('underline')">Underline</button>
+        <button onclick="addTable()">Insert Table</button>
+        <button onclick="uploadImage()">Upload Image</button>
+        <span>Word count: <span id="word-count">0</span></span>
+        <button id="dark-mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    </div>
+    <div id="editor" contenteditable="true"></div>
+    <script>
+        function format(command, value = null) {
+            document.execCommand(command, false, value);
+            updateWordCount();
+        }
+
+        function addTable() {
+            const rows = prompt('Enter number of rows:');
+            const cols = prompt('Enter number of columns:');
+            let table = '<table>';
+            for (let r = 0; r < rows; r++) {
+                table += '<tr>';
+                for (let c = 0; c < cols; c++) {
+                    table += '<td></td>';
+                }
+                table += '</tr>';
+            }
+            table += '</table>';
+            document.execCommand('insertHTML', false, table);
+        }
+
+        function uploadImage() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = event => {
+                const file = event.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const imgTag = '<img src="' + event.target.result + '" style="max-width: 100%;" />';
+                    document.execCommand('insertHTML', false, imgTag);
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        function updateWordCount() {
+            const text = document.getElementById('editor').innerText;
+            const words = text.split(/\s+/).filter(function (word) { return word.length > 0; });
+            document.getElementById('word-count').innerText = words.length;
+            localStorage.setItem('savedContent', text);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            document.getElementById('editor').classList.toggle('dark-mode');
+        }
+
+        window.onload = function() {
+            const savedContent = localStorage.getItem('savedContent');
+            if (savedContent) {
+                document.getElementById('editor').innerText = savedContent;
+                updateWordCount();
+            }
+        };
+    </script>
 </body>
 </html>
